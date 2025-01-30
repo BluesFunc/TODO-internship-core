@@ -5,6 +5,7 @@ on:
     branches:
       - dev,
       - main
+      - feature/2-project-setup
       
   pull_request:
     branches:
