@@ -1,0 +1,94 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - dev,
+      - main
+      - feature/2-project-setup
+      
+  pull_request:
+    branches:
+      - dev,
+      - main
+
+jobs:
+  build:
+    name: Build Project with Docker Compose
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Compose
+        run: docker-compose up --build -d
+
+      - name: Wait for services to be healthy
+        run: sleep 10
+
+      - name: Check running containers
+        run: docker ps -a
+
+  flake8:
+    name: Run Flake8 Linter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install flake8
+
+      - name: Run Flake8
+        run: flake8 .
+
+  isort:
+    name: Run Isort Linter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install isort
+
+      - name: Run Isort
+        run: isort --check-only .
+
+  black:
+    name: Run Black Formatter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install black
+
+      - name: Run Black
+        run: black --check .
+
+  mypy:
+    name: Run MyPy Type Checker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install mypy
+
+      - name: Run MyPy
+        run: mypy .
