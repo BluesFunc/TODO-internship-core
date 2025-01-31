@@ -1,16 +1,6 @@
 name: CI Pipeline
 
-on:
-  push:
-    branches:
-      - dev,
-      - main
-      - feature/project-setup
-      
-  pull_request:
-    branches:
-      - dev,
-      - main
+on: [push, pull_request] 
 
 jobs:
   build:
@@ -23,6 +13,17 @@ jobs:
       - name: Install Docker Compose
         run: sudo apt-get update && sudo apt-get install -y docker-compose
 
+      - name: Create .env file in porject folder
+        run: |
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+          echo "PYTHONUNBUFFERED=1" >> .env
+          echo "WEB_HOST={{ secrets.WEB_HOST}}" >> .env
+          
       - name: Set up Docker Compose
         run: docker-compose up --build -d
 
