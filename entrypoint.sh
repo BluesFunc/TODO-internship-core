@@ -1,15 +1,11 @@
-#!/bin/bash
+#!/bin/sh
 
 set -e
 
-until pg_isready -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER"; do
-  echo "Waiting for database at $DB_HOST:$DB_PORT..."
-  sleep 2
-done
+export PATH="/app/.venv/bin:$PATH"
 
-cd todo_core/
+. /app/.venv/bin/activate
 
-pipenv run ./manage.py makemigrations
-pipenv run  ./manage.py migrate --noinput
-pipenv run ./manage.py runserver "$WEB_HOST":8080
+python /app/todo_core/manage.py runserver "$WEB_HOST":8080
+    
     

@@ -1,31 +1,32 @@
-FROM python:3.12
+FROM python:3.12 AS builder
 
-RUN pip install --upgrade pip && pip install pipenv 
+WORKDIR /build
 
-ENV SOURCE_DIR=/app
-ENV BUILD_DIR=/home/app
+COPY Pipfile /build/
 
-RUN mkdir -p ${BUILD_DIR}
+RUN pip install --upgrade pip && \
+    pip install pipenv 
 
-WORKDIR ${BUILD_DIR}
+ENV PIPENV_VENV_IN_PROJECT=1    
 
-COPY ${SOURCE_DIR} ${BUILD_DIR}
+RUN pipenv install 
 
+FROM python:3.12-slim AS final
 
+RUN mkdir /app
 
-RUN apt-get update && \
-    apt-get install -y postgresql-client && \ 
-    cd ${BUILD_DIR}/todo_core
+WORKDIR /app
 
-COPY entrypoint.sh /entrypoint.sh
+RUN apt-get update && apt-get install -y libpq-dev
 
-RUN chmod +x /entrypoint.sh
+COPY --from=builder /build/.venv /app/.venv
 
+COPY todo_core /app/todo_core
 
-RUN pipenv install --dev
+COPY .env /app/.env
 
+COPY entrypoint.sh /app/entrypoint.sh
 
+RUN chmod +x /app/entrypoint.sh
 
-ENTRYPOINT ["/entrypoint.sh"]
-
-CMD ["pipenv", "run", "manage.py"]
+ENTRYPOINT ["sh", "/app/entrypoint.sh"]
