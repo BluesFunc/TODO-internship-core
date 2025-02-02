@@ -29,7 +29,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+      
     - name: Run mypy
       uses: jpetrucciani/mypy-check@master
       with:
@@ -43,9 +46,10 @@ jobs:
       uses: jpetrucciani/black-check@master
       with:
         path: 'todo_core/'
+        config: 'setup.cfg'
 
     - name: Run flake8-cq
-      uses: reactive-firewall/flake8-cq@master
+      uses: julianwachholz/flake8-action@v2
       with:
         config: "setup.cfg"
         path: "todo_core/"
