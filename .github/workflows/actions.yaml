@@ -11,88 +11,34 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Docker Compose
-        run: sudo apt-get update && sudo apt-get install -y docker-compose
+        uses: docker/setup-compose-action@v1
 
       - name: Create .env file in porject folder
         run: |
-          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
-          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
-          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
-          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
-          echo "PYTHONUNBUFFERED=1" >> .env
-          echo "WEB_HOST={{ secrets.WEB_HOST}}" >> .env
-          
+          echo "${{ secrets.dotenv }}" > .env
+
       - name: Set up Docker Compose
         run: docker-compose up --build -d
 
-      - name: Wait for services to be healthy
-        run: sleep 10
-
-      - name: Check running containers
-        run: docker ps -a
-
-  flake8:
-    name: Run Flake8 Linter
+  linters:
+    name: Run python linters
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: "3.12"
+    - uses: actions/checkout@v4
+    - name: Run mypy
+      uses: jpetrucciani/mypy-check@master
+      with:
+        path: 'todo_core/'
+        python_version: "3.12"
+    
+    - name: Run isort
+      uses: davidslusser/actions_python_isort@v1.0.1
 
-      - name: Install dependencies
-        run: pip install flake8
+    - name: Run black formater
+      uses: lgeiger/black-action@master
 
-      - name: Run Flake8
-        run: flake8 --config setup.cfg .
-
-  isort:
-    name: Run Isort Linter
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
-        run: pip install isort
-
-      - name: Run Isort
-        run: isort --check-only .
-
-  black:
-    name: Run Black Formatter
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
-        run: pip install black
-
-      - name: Run Black
-        run: black .
-
-  mypy:
-    name: Run MyPy Type Checker
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
-        run: pip install mypy
-
-      - name: Run MyPy
-        run: mypy --config-file setup.cfg .
+    - name: Run flake8-cq
+      uses: reactive-firewall/flake8-cq@master
+      with:
+        config: "setup.cfg"  # Specify the Flake8 configuration file
+        path: "todo_core/"
