@@ -1,6 +1,11 @@
 name: CI Pipeline
 
-on: [push, pull_request] 
+on:
+  pull_request:
+    branches: 
+      - dev
+      - main
+  push:
 
 jobs:
   build:
@@ -8,23 +13,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Docker Compose
         uses: docker/setup-compose-action@v1
 
-      - name: Create .env file in porject folder
-        run: |
-          echo "${{ secrets.dotenv }}" > .env
-
       - name: Set up Docker Compose
-        run: docker-compose up --build -d
+        run: docker compose --env-file .env.example up --build -d
 
   linters:
     name: Run python linters
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+
     - name: Run mypy
       uses: jpetrucciani/mypy-check@master
       with:
@@ -32,7 +34,7 @@ jobs:
         python_version: "3.12"
     
     - name: Run isort
-      uses: davidslusser/actions_python_isort@v1.0.1
+      uses: isort/isort-action@v1
 
     - name: Run black formater
       uses: lgeiger/black-action@master
@@ -40,5 +42,5 @@ jobs:
     - name: Run flake8-cq
       uses: reactive-firewall/flake8-cq@master
       with:
-        config: "setup.cfg"  # Specify the Flake8 configuration file
+        config: "setup.cfg"
         path: "todo_core/"
