@@ -18,8 +18,11 @@ jobs:
       - name: Install Docker Compose
         uses: docker/setup-compose-action@v1
 
+      - name: Create .env file from .env.example
+        run: cp .env.example .env
+
       - name: Set up Docker Compose
-        run: docker compose --env-file .env.example up --build -d
+        run: docker compose up --build -d
 
   linters:
     name: Run python linters
@@ -37,7 +40,9 @@ jobs:
       uses: isort/isort-action@v1
 
     - name: Run black formater
-      uses: lgeiger/black-action@master
+      uses: jpetrucciani/black-check@master
+      with:
+        path: 'todo_core/'
 
     - name: Run flake8-cq
       uses: reactive-firewall/flake8-cq@master
