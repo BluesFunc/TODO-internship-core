@@ -1,17 +1,8 @@
 import uuid
-from datetime import datetime
 
 from django.db import models
 from django.utils.translation import gettext_lazy
-
-
-class TimeStampedModel(models.Model):
-
-    created_at = models.DateTimeField(default=datetime.now())
-    updated_at = models.DateTimeField(auto_now=True, null=True)
-
-    class Meta:
-        abstract = True
+from projects.models import Project, TimeStampedModel
 
 
 class Task(TimeStampedModel):
@@ -21,9 +12,12 @@ class Task(TimeStampedModel):
         PROGRESS = "P", gettext_lazy("In progress")
         COMPLETE = "C", gettext_lazy("Complete")
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid5, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
     name = models.CharField(max_length=300, null=False)
     description = models.TextField()
+    project_id = models.ForeignKey(
+        Project, on_delete=models.CASCADE, related_name="tasks"
+    )
     status = models.CharField(max_length=2, choices=TaskStatus, default=TaskStatus.TODO)
     deadline = models.DateTimeField(default=None)
     assigner_id = models.UUIDField(default=None)
@@ -32,10 +26,13 @@ class Task(TimeStampedModel):
         db_table = "task"
 
 
-class Task_Status_Subscribers(TimeStampedModel):
+class TaskStatusSubscribers(TimeStampedModel):
 
-    task_id = models.UUIDField(primary_key=True)
-    user_id = models.UUIDField(primary_key=True)
+    task_id = models.ForeignKey(
+        "Task", primary_key=True, null=False, on_delete=models.CASCADE
+    )
+    user_id = models.UUIDField(null=False)
 
     class Meta:
         db_table = "task_status_subscribers"
+        unique_together = (("task_id", "user_id"),)
