@@ -1,0 +1,16 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+djangorestframework = "==3.15"
+python-dotenv = "==1.0.1"
+django = "==5.1"
+psycopg = "==3.2"
+
+[requires]
+python_version = "3.12"
+
+[dev-packages]
+markdown = "==3.7"
