@@ -1,5 +1,6 @@
 from common.models import TimeStampedModel
 from django.db import models
+from projects.choices.project_collaborator_role import ProjectCollaboratorRole
 
 
 class ProjectCollaborators(TimeStampedModel):
@@ -11,6 +12,12 @@ class ProjectCollaborators(TimeStampedModel):
         editable=False,
     )
     user_id = models.UUIDField(null=False)
+
+    role = models.CharField(
+        max_length=1,
+        choices=ProjectCollaboratorRole,
+        default=ProjectCollaboratorRole.READER,
+    )
 
     class Meta:
         db_table = "project_collaborators"

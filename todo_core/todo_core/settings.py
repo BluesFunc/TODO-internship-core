@@ -82,7 +82,7 @@ WSGI_APPLICATION = "todo_core.wsgi.application"
 DATABASES: dict[str, dict[str, str]] = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("POSTGRES_DB  ", "postgres"),
+        "NAME": os.getenv("POSTGRES_DB", "postgres"),
         "USER": os.getenv("POSTGRES_USER", "postgres"),
         "PASSWORD": os.getenv("POSTGRES_PASSWORD", "password"),
         "HOST": os.getenv("DB_HOST", "localhost"),
