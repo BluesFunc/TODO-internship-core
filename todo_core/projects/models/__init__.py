@@ -1,2 +1,2 @@
-from .projcet_collaborators import ProjectCollaborators
 from .project import Project
+from .project_collaborators import ProjectCollaborators

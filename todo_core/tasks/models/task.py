@@ -9,7 +9,7 @@ from ..choices.task_status import TaskStatus
 
 class Task(TimeStampedModel):
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=300, null=False)
     description = models.TextField()
     project_id = models.ForeignKey(
