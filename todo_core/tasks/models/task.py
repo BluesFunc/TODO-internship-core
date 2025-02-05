@@ -16,8 +16,8 @@ class Task(TimeStampedModel):
         Project, on_delete=models.CASCADE, related_name="tasks"
     )
     status = models.CharField(max_length=2, choices=TaskStatus, default=TaskStatus.TODO)
-    deadline = models.DateTimeField(default=None)
-    assigner_id = models.UUIDField(default=None)
+    deadline = models.DateTimeField(default=None, null=True)
+    assigner_id = models.UUIDField(default=None, null=True)
 
     class Meta:
         db_table = "task"
