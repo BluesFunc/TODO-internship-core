@@ -5,4 +5,4 @@ from rest_framework import serializers
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
-        fields = "__all__"
+        fields = ["id", "name", "description", "creator_id"]

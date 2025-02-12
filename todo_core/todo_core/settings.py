@@ -24,6 +24,9 @@ load_dotenv(".env")
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("SECRET_KEY")
+TOKEN_KEY = b"6b15c6866813eca804b20503f90804823d8540cfd1fc5f703eb0b0c984c88e5d"
+ALGORITHM = os.getenv("ALGORITHM")
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -35,6 +38,7 @@ ALLOWED_HOSTS: list[str] = os.getenv("ALLOWED_HOSTS", "*").split(",")
 
 INSTALLED_APPS = [
     "rest_framework",
+    "django_filters",
     "projects.apps.ProjectsConfig",
     "tasks.apps.TasksConfig",
     "django.contrib.admin",
@@ -53,6 +57,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "common.utils.AuthMiddleware",
 ]
 
 ROOT_URLCONF = "todo_core.urls"
@@ -132,3 +137,12 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": [
+        "common.permissions.isJwtAuthorizedPermisson",
+    ],
+    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 5,
+}

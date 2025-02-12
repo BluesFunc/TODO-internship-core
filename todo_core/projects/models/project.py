@@ -11,5 +11,8 @@ class Project(TimeStampedModel):
     description = models.TextField()
     creator_id = models.UUIDField(null=False)
 
+    def __str__(self) -> str:
+        return self.name
+
     class Meta:
         db_table = "project"
