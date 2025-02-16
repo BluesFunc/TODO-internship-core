@@ -1,11 +1,10 @@
 from typing import Callable
 
 import jwt
-from django.http import HttpResponse, HttpResponseBadRequest
+from common.utils import decode_token
+from django.http import HttpResponse
 from rest_framework.request import Request
 from rest_framework.response import Response
-
-from todo_core.settings import ALGORITHM, SECRET_KEY
 
 
 class AuthMiddleware:
@@ -14,24 +13,21 @@ class AuthMiddleware:
         self.get_response = get_response
 
     def __call__(self, request: Request) -> Response:
-
         token: str = request.headers.get("Authorization", "")
         if not token.startswith("Bearer "):
-            return HttpResponseBadRequest("Wrong token signature")
+            return HttpResponse("Wrong token signature", status=401)
         if not token:
-            return HttpResponse("Unauthorized", status=401)
+            return HttpResponse("Token is missing", status=401)
 
         try:
             token = token[7:]
-            user_data: dict[str, str] = jwt.decode(
-                token, SECRET_KEY, algorithms=ALGORITHM
-            )
+            user_data: dict[str, str] = decode_token(token)
         except jwt.DecodeError as e:
-            return HttpResponseBadRequest(e)
+            return HttpResponse(e, status=401)
         except jwt.ExpiredSignatureError as e:
-            return HttpResponseBadRequest(e)
+            return HttpResponse(e, status=401)
         except jwt.InvalidSignatureError as e:
-            return HttpResponseBadRequest(e)
+            return HttpResponse(e, status=401)
 
         request.user_data = user_data
         response: Response = self.get_response(request)

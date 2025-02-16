@@ -8,8 +8,7 @@ from projects.choices import ProjectCollaboratorRole
 class ProjectCollaborators(TimeStampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     project_id = models.ForeignKey(
-        "Project",
-        on_delete=models.CASCADE,
+        "Project", on_delete=models.CASCADE, related_name="collaborators"
     )
     user_id = models.UUIDField(null=False)
 

@@ -3,7 +3,7 @@ import jwt
 from todo_core.settings import ALGORITHM, TOKEN_KEY
 
 
-def encode_token(data: dict[str, str]) -> str:
+def encode_payload(data: dict[str, str]) -> str:
     """
     encode jwt token from data
     """
@@ -11,7 +11,7 @@ def encode_token(data: dict[str, str]) -> str:
     return jwt.encode(payload=data, key=TOKEN_KEY, algorithm=ALGORITHM)
 
 
-def decode_token(token: str) -> str:
+def decode_token(token: str) -> dict[str, str]:
     """
     decode jwt token
     """

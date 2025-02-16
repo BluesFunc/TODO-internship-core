@@ -1,2 +1,3 @@
-from .isProjectCollaborator import isProjectCollaboratorPermission
+from .isProjectCollaborator import IsProjectCollaboratorPermission
 from .isProjectCreator import IsProjectCreatorPermission
+from .isProjectEditor import IsProjectEditorPermission
