@@ -24,8 +24,8 @@ load_dotenv(".env")
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("SECRET_KEY")
-TOKEN_KEY = b"6b15c6866813eca804b20503f90804823d8540cfd1fc5f703eb0b0c984c88e5d"
-ALGORITHM = os.getenv("ALGORITHM")
+TOKEN_KEY = os.getenv("TOKEN_KEY", "secret")
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
 
 
 # SECURITY WARNING: don't run with debug turned on in production!

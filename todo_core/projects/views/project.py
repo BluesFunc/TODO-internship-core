@@ -33,7 +33,9 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def create(self, request: Request) -> Response:
         creator_id = request.user_data.get("user_id", "42")
         print(creator_id)
-        serializer = self.get_serializer(data={**request.data, "creator_id": creator_id})
+        serializer = self.get_serializer(
+            data={**request.data, "creator_id": creator_id}
+        )
 
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
