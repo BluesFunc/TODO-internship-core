@@ -8,7 +8,7 @@ router = DefaultRouter()
 router.register(r"projects", ProjectViewSet, basename="project")
 
 
-project_collaborator_router = NestedDefaultRouter(router, r"projects", lookup="")
+project_collaborator_router = NestedDefaultRouter(router, r"projects", lookup="project")
 project_collaborator_router.register(
     r"collaborators", ProjectCollaboratorViewSet, basename="project-collaborator"
 )

@@ -5,4 +5,4 @@ from rest_framework.viewsets import GenericViewSet
 
 class IsJwtAuthorizedPermisson(BasePermission):
     def has_permission(self, request: Request, view: GenericViewSet) -> bool:
-        return request.user_data
+        return request.user_data is not None

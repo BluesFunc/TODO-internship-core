@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "83bd1843e9733024ee1f1a25144e42d15b2295092bbf45489e89470e0f3027b4"
+            "sha256": "f3d4a6eb8dc482a132545a0318a663730c34797d5c8581b6af13e3144364038d"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -335,6 +335,23 @@
             "index": "pypi",
             "markers": "python_version >= '3.8'",
             "version": "==4.10.0"
+        },
+        "pytest-lazy-fixture": {
+            "hashes": [
+                "sha256:0e7d0c7f74ba33e6e80905e9bfd81f9d15ef9a790de97993e34213deb5ad10ac",
+                "sha256:e0b379f38299ff27a653f03eaa69b08a6fd4484e46fd1c9907d984b9f9daeda6"
+            ],
+            "index": "pypi",
+            "version": "==0.6.3"
+        },
+        "pytest-lazy-fixtures": {
+            "hashes": [
+                "sha256:14ba4154dab52066c1c4d6547cc40bbf60726445cb16f1d2dcc9485cdf38964d",
+                "sha256:e04c164d2caa5a6b9c846fa7559aad2ce0980a944daf4b75579f39920ae961e4"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.8' and python_version < '4.0'",
+            "version": "==1.1.2"
         },
         "pytest-mock": {
             "hashes": [

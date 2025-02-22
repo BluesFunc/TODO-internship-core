@@ -5,7 +5,7 @@ from projects.choices import ProjectCollaboratorRole
 from projects.models import Project
 
 
-@dataclass(frozen=True)
+@dataclass
 class ProjectCollaboratorEntity:
     project_id: Project
     user_id: UUID

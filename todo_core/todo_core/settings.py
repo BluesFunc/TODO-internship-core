@@ -26,7 +26,7 @@ load_dotenv(".env")
 SECRET_KEY = os.getenv("SECRET_KEY")
 TOKEN_KEY = os.getenv("TOKEN_KEY", "secret")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
-
+DEFAULT_SWAGGER_TOKEN = os.getenv("DEFAULT_SWAGGER_TOKEN", "")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -58,7 +58,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "common.utils.AuthMiddleware",
+    "common.middleware.AuthMiddleware",
 ]
 
 ROOT_URLCONF = "todo_core.urls"

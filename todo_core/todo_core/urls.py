@@ -15,7 +15,6 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
 from drf_yasg import openapi
@@ -32,15 +31,6 @@ schema_view = get_schema_view(
         terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="contact@snippets.local"),
         license=openapi.License(name="BSD License"),
-        security_definitions={
-            "Bearer Token": {
-                "type": "apiKey",
-                "in": "header",
-                "name": "Authorization",
-                "description": "Custom authentication token. Format: Bearer <your_token>",
-            }
-        },
-        default_api_key=settings.DEFAULT_SWAGGER_TOKEN,
     ),
     public=True,
     permission_classes=(permissions.AllowAny,),

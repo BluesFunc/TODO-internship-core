@@ -1,19 +1,34 @@
 from common import IsJwtAuthorizedPermisson
+from common.mixins import ActionPermissionViewSetMixin
 from django.db.models import QuerySet
+from projects.choices import ProjectCollaboratorRole
 from projects.entities import ProjectCollaboratorEntity
 from projects.models import Project
+from projects.permissions import (
+    IsCreateProjectPermission,
+    IsProjectCreatorPermission,
+    IsProjectViewerPermission,
+    IsReadProjects,
+)
 from projects.serializers import ProjectSerializer
 from projects.services import ProjectCollaboratorsService
 from rest_framework import status, viewsets
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.serializers import BaseSerializer
 
 
-class ProjectViewSet(viewsets.ModelViewSet):
+class ProjectViewSet(ActionPermissionViewSetMixin, viewsets.ModelViewSet):
 
     serializer_class = ProjectSerializer
     permission_classes = [IsJwtAuthorizedPermisson]
+    action_classes_permission = {
+        "retrieve": [IsReadProjects, IsProjectViewerPermission],
+        "create": [IsCreateProjectPermission],
+        "list": [IsReadProjects],
+        "destroy": [IsProjectCreatorPermission],
+        "update": [IsProjectCreatorPermission],
+        "partial_update": [IsProjectCreatorPermission],
+    }
 
     def get_queryset(self) -> QuerySet[Project]:
         user_id = self.request.user_data["user_id"]
@@ -33,8 +48,13 @@ class ProjectViewSet(viewsets.ModelViewSet):
             status=status.HTTP_201_CREATED,
         )
 
-    def perform_create(self, serializer: BaseSerializer) -> Project:
+    def perform_create(self, serializer: ProjectSerializer) -> Project:
         project = serializer.save()
-        collaborator = ProjectCollaboratorEntity(**serializer.data)
+        collaborator_data = {
+            "project_id": project,
+            "user_id": serializer.data.get("creator_id"),
+            "role": ProjectCollaboratorRole.EDITOR,
+        }
+        collaborator = ProjectCollaboratorEntity(**collaborator_data)
         ProjectCollaboratorsService.create(collaborator)
         return project

@@ -20,5 +20,5 @@ class ActionPermissionViewSetMixin(PermissionActionViewSetProtocol):
         view_actions = self.action_classes_permission
         if self.action in view_actions:
             permissions = self.action_classes_permission[self.action]
-            self.permission_classes.extend(permissions)
-        return [permission() for permission in self.permission_classes]
+            action_permissions = self.permission_classes + permissions
+        return [permission() for permission in action_permissions]
