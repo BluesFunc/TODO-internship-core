@@ -15,10 +15,8 @@ from rest_framework.views import APIView
     "permissioned_user,permissionless_user",
     [
         (
-            (
-                lf("mock_request_full_permission_user"),
-                lf("mock_request_user_without_permissions"),
-            )
+            lf("mock_request_full_permission_user"),
+            lf("mock_request_user_without_permissions"),
         )
     ],
 )
@@ -46,10 +44,8 @@ def test_project_create_permission(
     "permissioned_user,permissionless_user",
     [
         (
-            (
-                lf("mock_request_full_permission_user"),
-                lf("mock_request_user_without_permissions"),
-            )
+            lf("mock_request_full_permission_user"),
+            lf("mock_request_user_without_permissions"),
         )
     ],
 )
@@ -77,10 +73,8 @@ def test_project_get_permission(
     "permissioned_user,permissionless_user",
     [
         (
-            (
-                lf("mock_request_full_permission_user"),
-                lf("mock_request_user_without_test_project_access"),
-            )
+            lf("mock_request_full_permission_user"),
+            lf("mock_request_user_without_test_project_access"),
         )
     ],
 )
@@ -109,10 +103,8 @@ def test_project_editor_permission(
     "permissioned_user,permissionless_user",
     [
         (
-            (
-                lf("mock_request_full_permission_user"),
-                lf("mock_request_user_without_test_project_access"),
-            )
+            lf("mock_request_full_permission_user"),
+            lf("mock_request_user_without_test_project_access"),
         )
     ],
 )

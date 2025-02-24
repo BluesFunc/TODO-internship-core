@@ -336,14 +336,6 @@
             "markers": "python_version >= '3.8'",
             "version": "==4.10.0"
         },
-        "pytest-lazy-fixture": {
-            "hashes": [
-                "sha256:0e7d0c7f74ba33e6e80905e9bfd81f9d15ef9a790de97993e34213deb5ad10ac",
-                "sha256:e0b379f38299ff27a653f03eaa69b08a6fd4484e46fd1c9907d984b9f9daeda6"
-            ],
-            "index": "pypi",
-            "version": "==0.6.3"
-        },
         "pytest-lazy-fixtures": {
             "hashes": [
                 "sha256:14ba4154dab52066c1c4d6547cc40bbf60726445cb16f1d2dcc9485cdf38964d",
