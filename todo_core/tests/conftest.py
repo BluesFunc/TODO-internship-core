@@ -43,10 +43,10 @@ class JwtEncoder:
     key = TOKEN_KEY
     algorithm = ALGORITHM
 
-    @staticmethod
-    def encode(user_data: UserData) -> str:
+    @classmethod
+    def encode(cls, user_data: UserData) -> str:
         payload = asdict(user_data)
-        return jwt.encode(payload=payload, key=TOKEN_KEY, algorithm=ALGORITHM)
+        return jwt.encode(payload=payload, key=cls.key, algorithm=cls.algorithm)
 
 
 @pytest.fixture

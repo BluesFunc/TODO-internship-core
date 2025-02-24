@@ -32,12 +32,9 @@ def test_project_get(
     response = clinet_with_credentials.get(project_instance_url)
     assert response.status_code == status.HTTP_200_OK
 
-    response = clinet_with_credentials.get(project_instance_url)
-    assert response.status_code == status.HTTP_200_OK
-
 
 @pytest.mark.django_db
-def test_project_put(
+def test_project_patch(
     clinet_with_credentials: APIClient,
     project_instance_url: str,
     project_instance: Project,
@@ -45,7 +42,7 @@ def test_project_put(
     project_payload: ProjectPayloadData,
 ) -> None:
 
-    response = clinet_with_credentials.put(
+    response = clinet_with_credentials.patch(
         project_instance_url, asdict(project_payload), format="json"
     )
     assert response.status_code == status.HTTP_200_OK

@@ -1,3 +1,4 @@
+from typing import Callable
 from unittest.mock import Mock
 
 import pytest
@@ -22,7 +23,7 @@ from tests import UserData
         lf("missing_jwt_auth_header"),
     ],
 )
-def test_auth_middleware(mock_auth_request: Request, headers: str) -> None:
+def test_auth_middleware(mock_auth_request: Callable, headers: str) -> None:
     mock_get_request = Mock(return_value=HttpResponse())
     middleware = AuthMiddleware(mock_get_request)
     mock_request = mock_auth_request(headers)
@@ -33,8 +34,8 @@ def test_auth_middleware(mock_auth_request: Request, headers: str) -> None:
 
 def test_auth_permission(
     mock_viewset: APIView,
-    mock_request_with_full_permission_user_data: UserData,
-    mock_request_without_user_data: UserData,
+    mock_request_with_full_permission_user_data: Request,
+    mock_request_without_user_data: Request,
 ) -> None:
     permission = IsJwtAuthorizedPermisson()
     not_authorized_user = permission.has_permission(

@@ -8,7 +8,6 @@ from tests import ProjectData, UserData
 class ProjectPayloadData:
     name: str
     description: str
-    creator_id: str | None
 
 
 @pytest.fixture
@@ -32,5 +31,4 @@ def project_payload(full_permissions_valid_user_data: UserData) -> ProjectPayloa
     return ProjectPayloadData(
         name="Project Payload",
         description="Test payload",
-        creator_id=full_permissions_valid_user_data.user_id,
     )
