@@ -1,38 +1,38 @@
-from dataclasses import asdict
 from typing import Callable
 from unittest.mock import MagicMock
 
 import pytest
-from common.handlers import JwtHandler
 from rest_framework.generics import GenericAPIView
 from rest_framework.request import Request
-from tests.conftest import ProjectData, UserData
+from tests.conftest import ProjectData, UserDataPayload
+
+from common.handlers import JwtHandler
 
 
 @pytest.fixture
 def mock_request_full_permission_user(
-    full_permissions_valid_user_data: UserData,
+    full_permissions_valid_user_data: UserDataPayload,
 ) -> Request:
     request = MagicMock(spec=Request)
-    request.user_data = asdict(full_permissions_valid_user_data)
+    request.user_data = full_permissions_valid_user_data
     return request
 
 
 @pytest.fixture
 def mock_request_user_without_permissions(
-    valid_user_data_without_permissions: UserData,
+    valid_user_data_without_permissions: UserDataPayload,
 ) -> Request:
     request = MagicMock(spec=Request)
-    request.user_data = asdict(valid_user_data_without_permissions)
+    request.user_data = valid_user_data_without_permissions
     return request
 
 
 @pytest.fixture
 def mock_request_user_without_test_project_access(
-    valid_user_data_without_test_project_access: UserData,
+    valid_user_data_without_test_project_access: UserDataPayload,
 ) -> Request:
     request = MagicMock(spec=Request)
-    request.user_data = asdict(valid_user_data_without_test_project_access)
+    request.user_data = valid_user_data_without_test_project_access
     return request
 
 
@@ -42,8 +42,7 @@ def mock_project_viewset(
     mock_viewset: Callable,
 ) -> GenericAPIView:
     viewset = mock_viewset()
-    viewset.kwargs = {}
-    viewset.kwargs["pk"] = project_data.id
+    viewset.kwargs = {"pk": project_data.id}
     return viewset
 
 

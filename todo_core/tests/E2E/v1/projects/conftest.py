@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from uuid import uuid4
 
 import pytest
+
 from projects.choices import ProjectCollaboratorRole
 from projects.models import ProjectCollaborators
 

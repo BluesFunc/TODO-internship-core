@@ -1,2 +1,2 @@
-from .conftest import ProjectData, UserData
+from .conftest import ProjectData, UserDataPayload
 from .E2E import ProjectPayloadData

@@ -1,7 +1,8 @@
 import uuid
 
-from common.models import TimeStampedModel
 from django.db import models
+
+from common.models import TimeStampedModel
 
 
 class Project(TimeStampedModel):

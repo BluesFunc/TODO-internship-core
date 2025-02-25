@@ -1,10 +1,11 @@
-from projects.choices import ProjectCollaboratorRole
-from projects.models import Project, ProjectCollaborators
 from rest_framework.serializers import (
     ChoiceField,
     ModelSerializer,
     PrimaryKeyRelatedField,
 )
+
+from projects.choices import ProjectCollaboratorRole
+from projects.models import Project, ProjectCollaborators
 
 
 class ProjectCollaboratorSerializer(ModelSerializer):

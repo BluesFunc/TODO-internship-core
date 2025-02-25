@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 import pytest
-from tests import ProjectData, UserData
+from tests import ProjectData, UserDataPayload
 
 
 @dataclass(slots=True)
@@ -26,7 +26,9 @@ def project_instance_url(project_url: str, project_data: ProjectData) -> str:
 
 
 @pytest.fixture
-def project_payload(full_permissions_valid_user_data: UserData) -> ProjectPayloadData:
+def project_payload(
+    full_permissions_valid_user_data: UserDataPayload,
+) -> ProjectPayloadData:
 
     return ProjectPayloadData(
         name="Project Payload",

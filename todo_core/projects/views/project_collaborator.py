@@ -1,5 +1,9 @@
+from rest_framework import status, viewsets
+from rest_framework.request import Request
+from rest_framework.response import Response
+
 from common.mixins import ActionPermissionViewSetMixin
-from common.permissions import IsJwtAuthorizedPermisson
+from common.permissions import IsJwtAuthorizedPermission
 from projects.filters import ProjectCollaboratorFilterBackend
 from projects.models import ProjectCollaborators
 from projects.permissions import (
@@ -7,9 +11,6 @@ from projects.permissions import (
     IsProjectCollaboratorReaderPermission,
 )
 from projects.serializers import ProjectCollaboratorSerializer
-from rest_framework import status, viewsets
-from rest_framework.request import Request
-from rest_framework.response import Response
 
 
 class ProjectCollaboratorViewSet(ActionPermissionViewSetMixin, viewsets.ModelViewSet):
@@ -17,7 +18,7 @@ class ProjectCollaboratorViewSet(ActionPermissionViewSetMixin, viewsets.ModelVie
     serializer_class = ProjectCollaboratorSerializer
     queryset = ProjectCollaborators.objects.all()
     filter_backends = [ProjectCollaboratorFilterBackend]
-    permission_classes = [IsJwtAuthorizedPermisson]
+    permission_classes = [IsJwtAuthorizedPermission]
     action_classes_permission = {
         "retrieve": [IsProjectCollaboratorReaderPermission],
         "create": [IsProjectCollaboratorEditorPermission],

@@ -1,2 +1,1 @@
-from .is_authroized import IsJwtAuthorizedPermisson
-from .models_permissions import ProjectPermissions
+from .is_authroized import IsJwtAuthorizedPermission

@@ -1,10 +1,11 @@
 from dataclasses import asdict
 
 import pytest
-from projects.models import Project, ProjectCollaborators
 from rest_framework import status
 from rest_framework.test import APIClient
 from tests import ProjectPayloadData
+
+from projects.models import Project, ProjectCollaborators
 
 
 @pytest.mark.django_db

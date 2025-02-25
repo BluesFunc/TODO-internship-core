@@ -1,11 +1,12 @@
 from dataclasses import asdict
 
 import pytest
-from projects.models import Project, ProjectCollaborators
 from pytest_lazy_fixtures import lf
 from rest_framework import status
 from rest_framework.test import APIClient
 from tests import ProjectPayloadData
+
+from projects.models import Project, ProjectCollaborators
 
 
 @pytest.mark.parametrize(

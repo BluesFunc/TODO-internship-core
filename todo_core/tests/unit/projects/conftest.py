@@ -1,4 +1,5 @@
 import pytest
+
 from projects.permissions import (
     IsCreateProjectPermission,
     IsProjectCollaboratorEditorPermission,

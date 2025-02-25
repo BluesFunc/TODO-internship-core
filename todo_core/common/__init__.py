@@ -1,2 +1,2 @@
 from .models import TimeStampedModel
-from .permissions import IsJwtAuthorizedPermisson
+from .permissions import IsJwtAuthorizedPermission

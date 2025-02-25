@@ -1,62 +1,34 @@
-from dataclasses import asdict, dataclass
-from datetime import datetime, timedelta, timezone
-from typing import Callable
+from dataclasses import asdict
 from unittest.mock import MagicMock
 from uuid import uuid4
 
 import jwt
 import pytest
-from projects.choices import ProjectCollaboratorRole
-from projects.models import Project, ProjectCollaborators
 from rest_framework.request import Request
 from rest_framework.test import APIClient
 from rest_framework.viewsets import GenericViewSet
+from tests.utils import (
+    MissingIdUserData,
+    ProjectCollaboratorData,
+    ProjectData,
+    UserDataPayload,
+)
 
+from common.choices import ProjectPermissions, Roles
+from projects.choices import ProjectCollaboratorRole
+from projects.models import Project, ProjectCollaborators
 from todo_core.settings import ALGORITHM, TOKEN_KEY
 
 
-@dataclass(slots=True)
-class UserData:
-    mail: str | None
-    user_id: str | None
-    exp: datetime | None
-    role: list[str] | None
-    permissions: list[str] | None
-
-
-@dataclass(slots=True)
-class ProjectData:
-    id: str | None
-    name: str | None
-    description: str | None
-    creator_id: str | None
-
-
-@dataclass(slots=True)
-class ProjectCollaboratorData:
-    user_id: str | None
-    project_id: str | None
-    role: ProjectCollaboratorRole | None
-
-
 class JwtEncoder:
-    key = TOKEN_KEY
-    algorithm = ALGORITHM
 
-    @classmethod
-    def encode(cls, user_data: UserData) -> str:
+    def __init__(self, key: str = TOKEN_KEY, algorithm: str = ALGORITHM) -> None:
+        self.key = key
+        self.algorithm = algorithm
+
+    def encode(self, user_data: UserDataPayload | MissingIdUserData) -> str:
         payload = asdict(user_data)
-        return jwt.encode(payload=payload, key=cls.key, algorithm=cls.algorithm)
-
-
-@pytest.fixture
-def TOKEN_YEAR_EXPIRATION_TIME() -> timedelta:
-    return timedelta(weeks=52)
-
-
-@pytest.fixture
-def TOKEN_SECOND_EXPIRATIONS_TIME() -> timedelta:
-    return timedelta(seconds=1)
+        return jwt.encode(payload=payload, key=self.key, algorithm=self.algorithm)
 
 
 @pytest.fixture(scope="session")
@@ -64,118 +36,62 @@ def TokenEncoder() -> JwtEncoder:
     return JwtEncoder()
 
 
-@pytest.fixture()
-def get_current_time_with_time_zone() -> datetime:
-    return datetime.now(tz=timezone.utc)
-
-
-@pytest.fixture()
-def token_expire_at(get_current_time_with_time_zone: datetime) -> Callable:
-    def set_expirentaion_time(delta: timedelta) -> float:
-        return (get_current_time_with_time_zone + delta).timestamp()
-
-    return set_expirentaion_time
-
-
 @pytest.fixture
-def short_expirenation_time(
-    TOKEN_SECOND_EXPIRATIONS_TIME: timedelta, token_expire_at: Callable
-) -> datetime:
+def full_permissions_valid_user_data() -> UserDataPayload:
 
-    return token_expire_at(TOKEN_SECOND_EXPIRATIONS_TIME)
-
-
-@pytest.fixture
-def long_expirenation_time(
-    TOKEN_YEAR_EXPIRATION_TIME: timedelta, token_expire_at: Callable
-) -> datetime:
-    return token_expire_at(TOKEN_YEAR_EXPIRATION_TIME)
-
-
-@pytest.fixture
-def expired_auth_user_data(short_expirenation_time: datetime) -> UserData:
-    return UserData(
+    return UserDataPayload(
         mail="borov228@mail.ru",
         user_id="e1701363-5b69-4f08-a4bf-ce391fe0f11e",
-        exp=short_expirenation_time,
-        role=["user"],
-        permissions=["create_projects", "get_projects"],
+        role=[Roles.user],
+        permissions=[ProjectPermissions.create, ProjectPermissions.get],
     )
 
 
 @pytest.fixture
-def full_permissions_valid_user_data(long_expirenation_time: datetime) -> UserData:
-
-    return UserData(
-        mail="borov228@mail.ru",
-        user_id="e1701363-5b69-4f08-a4bf-ce391fe0f11e",
-        exp=long_expirenation_time,
-        role=["user"],
-        permissions=["create_projects", "get_projects"],
-    )
-
-
-@pytest.fixture
-def valid_user_data_without_permissions(long_expirenation_time: datetime) -> UserData:
-
-    return UserData(
+def valid_user_data_without_permissions() -> UserDataPayload:
+    return UserDataPayload(
         mail="borov228@mail.ru",
         user_id="2147f8f2-514b-441c-8841-0a5ca2b9c1b7",
-        exp=long_expirenation_time,
-        role=["user"],
+        role=[Roles.user],
         permissions=[],
     )
 
 
 @pytest.fixture
-def valid_user_data_without_test_project_access(
-    long_expirenation_time: datetime,
-) -> UserData:
-    return UserData(
+def valid_user_data_without_test_project_access() -> UserDataPayload:
+    return UserDataPayload(
         mail="borov228@mail.ru",
         user_id=str(uuid4()),
-        exp=long_expirenation_time,
-        role=["user"],
-        permissions=["create_projects", "get_projects"],
+        role=[Roles.user],
+        permissions=[ProjectPermissions.create, ProjectPermissions.get],
     )
 
 
 @pytest.fixture
-def invalid_auth_user_data_without_user_id() -> UserData:
+def invalid_auth_user_data_without_user_id() -> MissingIdUserData:
 
-    return UserData(
-        mail="borov228@mail.ru", user_id=None, exp=None, role=None, permissions=None
-    )
+    return MissingIdUserData(mail="borov228@mail.ru")
 
 
 @pytest.fixture()
 def full_permission_valid_auth_user_token(
-    full_permissions_valid_user_data: UserData, TokenEncoder: JwtEncoder
+    full_permissions_valid_user_data: UserDataPayload, TokenEncoder: JwtEncoder
 ) -> str:
-
     return TokenEncoder.encode(full_permissions_valid_user_data)
 
 
 @pytest.fixture()
 def valid_auth_user_token_without_permissions(
-    valid_user_data_without_permissions: UserData, TokenEncoder: JwtEncoder
+    valid_user_data_without_permissions: UserDataPayload, TokenEncoder: JwtEncoder
 ) -> str:
     return TokenEncoder.encode(valid_user_data_without_permissions)
 
 
 @pytest.fixture
 def invalid_auth_user_token(
-    invalid_auth_user_data_without_user_id: UserData, TokenEncoder: JwtEncoder
+    invalid_auth_user_data_without_user_id: MissingIdUserData, TokenEncoder: JwtEncoder
 ) -> str:
     return TokenEncoder.encode(invalid_auth_user_data_without_user_id)
-
-
-@pytest.fixture
-def expired_auth_user_token(
-    expired_auth_user_data: UserData, TokenEncoder: JwtEncoder
-) -> str:
-
-    return TokenEncoder.encode(expired_auth_user_data)
 
 
 @pytest.fixture
@@ -186,11 +102,6 @@ def empty_auth_header() -> dict[str, str]:
 @pytest.fixture
 def invalid_jwt_signature_auth_header() -> dict[str, str]:
     return {"Token ": ""}
-
-
-@pytest.fixture
-def expired_jwt_auth_header(expired_auth_user_token: str) -> dict[str, str]:
-    return {"Bearer ": expired_auth_user_token}
 
 
 @pytest.fixture
@@ -222,19 +133,19 @@ def mock_request(request: pytest.FixtureRequest) -> MagicMock:
 
 @pytest.fixture
 def mock_request_with_full_permission_user_data(
-    full_permissions_valid_user_data: UserData,
+    full_permissions_valid_user_data: UserDataPayload,
 ) -> MagicMock:
     request = MagicMock(Request)
-    request.user_data = asdict(full_permissions_valid_user_data)
+    request.user_data = full_permissions_valid_user_data
     return request
 
 
 @pytest.fixture
 def mock_request_without_permissions_user_data(
-    valid_user_data_without_permissions: UserData,
+    valid_user_data_without_permissions: UserDataPayload,
 ) -> MagicMock:
     request = MagicMock(Request)
-    request.user_data = asdict(valid_user_data_without_permissions)
+    request.user_data = valid_user_data_without_permissions
     return request
 
 
@@ -259,13 +170,13 @@ def mock_viewset() -> MagicMock:
 
 
 @pytest.fixture
-def project_data(full_permissions_valid_user_data: UserData) -> ProjectData:
+def project_data(full_permissions_valid_user_data: UserDataPayload) -> ProjectData:
 
     return ProjectData(
         id="528a4d91-ef0a-452c-a28d-c9209df3c562",
         name="Test",
         description="Test project",
-        creator_id=full_permissions_valid_user_data.user_id,
+        creator_id=str(full_permissions_valid_user_data.user_id),
     )
 
 
@@ -278,10 +189,10 @@ def project_instance(project_data: ProjectData) -> Project:
 
 @pytest.fixture()
 def project_collaborator_editor_data(
-    project_data: ProjectData, full_permissions_valid_user_data: UserData
+    project_data: ProjectData, full_permissions_valid_user_data: UserDataPayload
 ) -> ProjectCollaboratorData:
     return ProjectCollaboratorData(
-        user_id=full_permissions_valid_user_data.user_id,
+        user_id=str(full_permissions_valid_user_data.user_id),
         project_id=project_data.id,
         role=ProjectCollaboratorRole.EDITOR.value,
     )

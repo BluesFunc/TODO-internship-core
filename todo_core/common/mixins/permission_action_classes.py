@@ -1,5 +1,6 @@
-from common.protocols import PermissionActionViewSetProtocol
 from rest_framework.permissions import BasePermission
+
+from common.protocols import PermissionActionViewSetProtocol
 
 
 class ActionPermissionViewSetMixin(PermissionActionViewSetProtocol):
