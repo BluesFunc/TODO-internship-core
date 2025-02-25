@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    name: Run Tests and Compose
+    name: Run Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
