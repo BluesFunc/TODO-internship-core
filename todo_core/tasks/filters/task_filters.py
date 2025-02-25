@@ -11,7 +11,5 @@ class TaskFilters(BaseFilterBackend):
     def filter_queryset(
         self, request: Request, queryset: QuerySet[Task], view: GenericAPIView
     ) -> QuerySet[Task]:
-        data = UUID(
-            view.kwargs.get("project_pk", "528a4d91-ef0a-452c-a28d-c9209df3c562")
-        )
-        return queryset.filter(project_id=data)
+        project_id = UUID(view.kwargs.get("project_pk"))
+        return queryset.filter(project_id=project_id)
