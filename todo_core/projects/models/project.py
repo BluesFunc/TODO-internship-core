@@ -1,7 +1,8 @@
 import uuid
 
-from common.models import TimeStampedModel
 from django.db import models
+
+from common.models import TimeStampedModel
 
 
 class Project(TimeStampedModel):
@@ -10,6 +11,9 @@ class Project(TimeStampedModel):
     name = models.CharField(max_length=300, null=False)
     description = models.TextField()
     creator_id = models.UUIDField(null=False)
+
+    def __str__(self) -> str:
+        return self.name
 
     class Meta:
         db_table = "project"

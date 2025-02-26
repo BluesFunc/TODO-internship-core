@@ -24,17 +24,21 @@ load_dotenv(".env")
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("SECRET_KEY")
+TOKEN_KEY = os.getenv("TOKEN_KEY", "secret")
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
+DEFAULT_SWAGGER_TOKEN = os.getenv("DEFAULT_SWAGGER_TOKEN", "")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS: list[str] = os.getenv("ALLOWED_HOSTS", "*").split(",")
+ALLOWED_HOSTS: list[str] = os.getenv("ALLOWED_HOSTS", "").split(",")
 
 
 # Application definition
 
 INSTALLED_APPS = [
     "rest_framework",
+    "django_filters",
     "projects.apps.ProjectsConfig",
     "tasks.apps.TasksConfig",
     "django.contrib.admin",
@@ -43,6 +47,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "drf_yasg",
 ]
 
 MIDDLEWARE = [
@@ -53,6 +58,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "common.middleware.AuthMiddleware",
 ]
 
 ROOT_URLCONF = "todo_core.urls"
@@ -132,3 +138,10 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+DEFAULT_SWAGGER_TOKEN = os.getenv("DEFAUTL_SWAGGER_TOKEN", "")
+
+REST_FRAMEWORK = {
+    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 5,
+}

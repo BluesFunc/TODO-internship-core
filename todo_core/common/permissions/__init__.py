@@ -1,0 +1,1 @@
+from .is_authroized import IsJwtAuthorizedPermission

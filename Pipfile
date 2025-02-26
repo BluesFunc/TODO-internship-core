@@ -8,9 +8,18 @@ djangorestframework = "==3.15"
 python-dotenv = "==1.0.1"
 django = "==5.1"
 psycopg = "==3.2"
+drf-nested-routers = "==0.94"
+pyjwt = "==2.10.1"
+django-filter = "==24.3"
+drf-yasg = "==1.21.8"
+markdown = "==3.7"
 
 [requires]
 python_version = "3.12"
 
 [dev-packages]
-markdown = "==3.7"
+pytest = "==8.3.4"
+pytest-django = "==4.10"
+pytest-mock = "==3.14"
+pytest-cov = "==6.0"
+pytest-lazy-fixtures = "==1.1.2"
