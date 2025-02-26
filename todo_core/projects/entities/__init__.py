@@ -1,1 +1,0 @@
-from .project_collaborators import ProjectCollaboratorEntity
