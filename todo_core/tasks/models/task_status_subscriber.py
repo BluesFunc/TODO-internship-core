@@ -1,7 +1,8 @@
 from uuid import uuid4
 
-from common.models import TimeStampedModel
 from django.db import models
+
+from common.models import TimeStampedModel
 
 
 class TaskStatusSubscribers(TimeStampedModel):

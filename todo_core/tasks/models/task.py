@@ -1,7 +1,8 @@
 import uuid
 
-from common.models import TimeStampedModel
 from django.db import models
+
+from common.models import TimeStampedModel
 from projects.models.project import Project
 
 from ..choices.task_status import TaskStatus

@@ -1,15 +1,15 @@
-from common.models import TimeStampedModel
+import uuid
+
 from django.db import models
-from projects.choices.project_collaborator_role import ProjectCollaboratorRole
+
+from common.models import TimeStampedModel
+from projects.choices import ProjectCollaboratorRole
 
 
 class ProjectCollaborators(TimeStampedModel):
-
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     project_id = models.ForeignKey(
-        "Project",
-        primary_key=True,
-        on_delete=models.CASCADE,
-        editable=False,
+        "Project", on_delete=models.CASCADE, related_name="collaborators"
     )
     user_id = models.UUIDField(null=False)
 
