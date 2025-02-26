@@ -15,13 +15,25 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+from itertools import chain
+
 from django.contrib import admin
 from django.urls import include, path
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
+from rest_framework.routers import DefaultRouter
+
+from projects.urls import project_collaborator_router, projects_router
+from tasks.urls import tasks_router
 
 ...
+
+
+api_router = DefaultRouter()
+api_router.urls.extend(
+    chain(projects_router.urls, project_collaborator_router.urls, tasks_router.urls)
+)
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -44,5 +56,5 @@ urlpatterns = [
         schema_view.with_ui("swagger", cache_timeout=0),
         name="schema-swagger-ui",
     ),
-    path("api/v1/", include("projects.urls")),
+    path("api/v1/", include(api_router.urls)),
 ]
