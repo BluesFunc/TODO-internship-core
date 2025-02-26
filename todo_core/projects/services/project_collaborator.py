@@ -1,7 +1,4 @@
-from django.db import IntegrityError
-
-from common.exceptions import BadRequest
-from projects.models import ProjectCollaborators
+from projects.models import ProjectCollaborat
 
 
 class ProjectCollaboratorsService:
