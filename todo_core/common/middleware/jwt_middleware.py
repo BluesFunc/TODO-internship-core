@@ -26,6 +26,8 @@ class AuthMiddleware:
                 token = token.split()[1]
                 data = JwtHandler.decode_token(token)
                 user_data = self._parse_user_data(data)
+            except KeyError:
+                raise AuthenticationFailed("Required data is missing")
             except IndexError:
                 raise AuthenticationFailed("Required data is missing")
             except ValidationError:

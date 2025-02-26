@@ -1,6 +1,6 @@
 from django.db import IntegrityError
-from rest_framework.exceptions import ValidationError
 
+from common.exceptions import BadRequest
 from projects.models import ProjectCollaborators
 
 
@@ -10,5 +10,5 @@ class ProjectCollaboratorsService:
         try:
             collaborator.save()
         except IntegrityError as ie:
-            raise ValidationError(ie)
+            raise BadRequest(ie)
         return collaborator
