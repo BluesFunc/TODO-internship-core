@@ -7,8 +7,5 @@ from projects.models import ProjectCollaborators
 class ProjectCollaboratorsService:
     @staticmethod
     def create(collaborator: ProjectCollaborators) -> ProjectCollaborators:
-        try:
-            collaborator.save()
-        except IntegrityError as ie:
-            raise BadRequest(ie)
+        collaborator.save()
         return collaborator
