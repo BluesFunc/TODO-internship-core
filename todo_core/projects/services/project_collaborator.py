@@ -1,4 +1,4 @@
-from projects.models import ProjectCollaborat
+from projects.models import ProjectCollaborators
 
 
 class ProjectCollaboratorsService:
