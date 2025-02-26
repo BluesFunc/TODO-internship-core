@@ -1,1 +1,2 @@
+from .multi_serializer_viewset_mixin import MultiSerializerViewSetMixin
 from .permission_action_classes import ActionPermissionViewSetMixin

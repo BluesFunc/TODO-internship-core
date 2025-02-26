@@ -1,1 +1,2 @@
+from .multi_serializer_viewset import MultiSerializerViewSetProtocol
 from .permission_action_view import PermissionActionViewSetProtocol
