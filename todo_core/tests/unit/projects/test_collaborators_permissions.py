@@ -41,7 +41,15 @@ def test_collaborator_permissions(
     project_instance: Project,
     project_collaborator_editor_instance: ProjectCollaborators,
 ) -> None:
-    permission_result = permission.has_permission(
+    has_permission = permission.has_permission(
         request=user_request, view=mock_project_nested_viewset
     )
-    assert permission_result is expected_result
+
+    has_object_permission = permission.has_object_permission(
+        request=user_request,
+        view=mock_project_nested_viewset,
+        obj=project_collaborator_editor_instance,
+    )
+
+    result = has_permission and has_object_permission
+    assert result is expected_result
