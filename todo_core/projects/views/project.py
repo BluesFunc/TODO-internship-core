@@ -10,7 +10,6 @@ from projects.models import Project, ProjectCollaborators
 from projects.permissions import (
     IsCreateProjectPermission,
     IsProjectCreatorPermission,
-    IsProjectViewerPermission,
     IsReadProjects,
 )
 from projects.serializers import ProjectSerializer
@@ -22,7 +21,7 @@ class ProjectViewSet(ActionPermissionViewSetMixin, viewsets.ModelViewSet):
     serializer_class = ProjectSerializer
     permission_classes = [IsJwtAuthorizedPermission]
     action_classes_permission = {
-        "retrieve": [IsReadProjects, IsProjectViewerPermission],
+        "retrieve": [IsReadProjects],
         "create": [IsCreateProjectPermission],
         "list": [IsReadProjects],
         "destroy": [IsProjectCreatorPermission],
