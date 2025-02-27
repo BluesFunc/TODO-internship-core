@@ -10,6 +10,7 @@ from rest_framework.serializers import BaseSerializer
 from rest_framework.viewsets import ModelViewSet
 
 from common.mixins import MultiSerializerViewSetMixin
+from common.tools import MailSender
 from tasks.filters import TaskFilters
 from tasks.models import Task, TaskStatusSubscribers
 from tasks.schemas import TaskDeadlineSchema
@@ -40,13 +41,18 @@ class TaskViewSet(MultiSerializerViewSetMixin, ModelViewSet):
 
     @action(detail=True, methods=["patch"])
     def deadline(self, request: Request, project_pk: str, pk: str) -> Response:
-        task = self.get_object()
+        try:
+            task = self.get_object()
 
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        deadline = serializer.data["deadline"]
-        TaskService.set_deadline(task, deadline)
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            deadline = serializer.data["deadline"]
+            TaskService.set_deadline(task, deadline)
+        except IntegrityError as ie:
+            raise BadRequest(ie)
         headers = self.get_success_headers(serializer.data)
+        user_mail = request.user_data.mail
+        MailSender.send_subscribe_notification(user_mail, task)
         return Response(serializer.data, status=status.HTTP_200_OK, headers=headers)
 
     @action(detail=True, methods=["post"])
@@ -58,6 +64,8 @@ class TaskViewSet(MultiSerializerViewSetMixin, ModelViewSet):
             TaskStatusSubscriberService.create(entity)
         except IntegrityError as ie:
             raise BadRequest(ie)
+        user_mail = request.user_data.mail
+        MailSender.send_subscribe_notification(user_mail, task)
         return Response(status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=["delete"])
@@ -68,6 +76,8 @@ class TaskViewSet(MultiSerializerViewSetMixin, ModelViewSet):
             TaskStatusSubscriberService.delete(task, user_id)
         except ObjectDoesNotExist as oe:
             raise BadRequest(oe)
+        user_mail = request.user_data.mail
+        MailSender.send_unsubscribe_message(user_mail, task)
         return Response(
             status=status.HTTP_204_NO_CONTENT,
         )
