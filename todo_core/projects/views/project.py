@@ -39,7 +39,6 @@ class ProjectViewSet(ActionPermissionViewSetMixin, viewsets.ModelViewSet):
         serializer = self.get_serializer(
             data={**request.data, "creator_id": creator_id}
         )
-
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         return Response(
