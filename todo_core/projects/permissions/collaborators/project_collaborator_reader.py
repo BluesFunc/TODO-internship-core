@@ -5,7 +5,6 @@ from rest_framework.permissions import BasePermission
 from rest_framework.request import Request
 from rest_framework.views import APIView
 
-from projects.models import ProjectCollaborators
 from projects.services import ProjectCollaboratorsService, ProjectService
 
 
@@ -20,8 +19,3 @@ class IsProjectCollaboratorReaderPermission(BasePermission):
         except ValueError as ve:
             raise ValidationError(ve)
         return ProjectCollaboratorsService.is_collaborator(user_id, project)
-
-    def has_object_permission(
-        self, request: Request, view: APIView, obj: ProjectCollaborators
-    ) -> bool:
-        return self.has_permission(request, view)

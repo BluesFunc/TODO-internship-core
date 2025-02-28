@@ -19,7 +19,10 @@ class ActionPermissionViewSetMixin(PermissionActionViewSetProtocol):
 
     def get_permissions(self) -> list[BasePermission]:
         view_actions = self.action_classes_permission
+
         if self.action in view_actions:
             permissions = self.action_classes_permission[self.action]
             action_permissions = self.permission_classes + permissions
+        else:
+            action_permissions = self.permission_classes
         return [permission() for permission in action_permissions]

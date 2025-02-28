@@ -1,5 +1,6 @@
 from uuid import UUID
 
+from projects.choices import ProjectCollaboratorRole
 from projects.models import Project, ProjectCollaborators
 
 
@@ -15,3 +16,10 @@ class ProjectCollaboratorsService:
         return ProjectCollaborators.objects.filter(
             user_id=user_id, project_id=project
         ).exists()
+
+    @staticmethod
+    def is_project_editor(user_id: UUID, project: Project) -> bool:
+        collaborator = ProjectCollaborators.objects.get(
+            project_id=project, user_id=user_id
+        )
+        return collaborator.role == ProjectCollaboratorRole.EDITOR.value

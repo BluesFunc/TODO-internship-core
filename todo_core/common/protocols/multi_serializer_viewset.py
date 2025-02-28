@@ -9,4 +9,5 @@ class MultiSerializerViewSetProtocol(Protocol):
     serializer_class: BaseSerializer
     action: str
 
-    def get_serializer_class(self) -> BaseSerializer: ...
+    def get_serializer_class(self) -> BaseSerializer:
+        raise NotImplementedError()
