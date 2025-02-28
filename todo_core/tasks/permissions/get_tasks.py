@@ -7,7 +7,7 @@ from projects.services import ProjectCollaboratorsService
 from tasks.models import Task
 
 
-class IsCreateTaskPermission(BasePermission):
+class IsGetTaskPermission(BasePermission):
     def has_permission(self, request: Request, view: APIView) -> bool:
         return TaskPermissions.create.value in request.user_data.permissions
 

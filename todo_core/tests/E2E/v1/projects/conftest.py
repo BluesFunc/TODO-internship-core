@@ -1,16 +1,10 @@
-from dataclasses import dataclass
 from uuid import uuid4
 
 import pytest
+from tests.E2E.v1 import ProjectCollaboratorPayload, ProjectPayloadData
 
 from projects.choices import ProjectCollaboratorRole
 from projects.models import ProjectCollaborators
-
-
-@dataclass
-class ProjectCollaboratorPayload:
-    user_id: str
-    role: ProjectCollaboratorRole
 
 
 @pytest.fixture
@@ -38,4 +32,13 @@ def project_collaborator_editor_payload() -> ProjectCollaboratorPayload:
 def project_collaborator_reader_payload() -> ProjectCollaboratorPayload:
     return ProjectCollaboratorPayload(
         user_id=str(uuid4()), role=ProjectCollaboratorRole.READER.value
+    )
+
+
+@pytest.fixture
+def project_payload() -> ProjectPayloadData:
+
+    return ProjectPayloadData(
+        name="Project Payload",
+        description="Test payload",
     )

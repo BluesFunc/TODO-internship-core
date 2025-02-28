@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from uuid import UUID
 
 from common.choices import ProjectPermissions, Roles
 from projects.choices import ProjectCollaboratorRole
@@ -11,14 +12,14 @@ class MissingIdUserData:
 
 @dataclass(slots=True)
 class ProjectData:
-    id: str
+    id: UUID
     name: str
     description: str
-    creator_id: str
+    creator_id: UUID
 
 
 @dataclass
-class UserDataPayload:
+class UserTokenPayload:
     mail: str
     user_id: str
     role: list[Roles | None]
@@ -27,6 +28,12 @@ class UserDataPayload:
 
 @dataclass(slots=True)
 class ProjectCollaboratorData:
-    user_id: str
-    project_id: str
+    user_id: UUID
+    project_id: UUID
     role: ProjectCollaboratorRole
+
+
+@dataclass(slots=True)
+class ProjectPayloadData:
+    name: str
+    description: str

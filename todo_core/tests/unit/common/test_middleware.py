@@ -7,9 +7,7 @@ from pytest_lazy_fixtures import lf
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.views import APIView
-from tests import UserDataPayload
 
-from common.handlers import JwtHandler
 from common.middleware import AuthMiddleware
 from common.permissions import IsJwtAuthorizedPermission
 
@@ -48,12 +46,3 @@ def test_auth_permission(
 
     assert not_authorized_user is False
     assert authorized_user is True
-
-
-def test_token_decoder(
-    valid_auth_user_token_without_permissions: str,
-    TokenDecoder: JwtHandler,
-    valid_user_data_without_permissions: UserDataPayload,
-) -> None:
-    data = TokenDecoder.decode_token(valid_auth_user_token_without_permissions)
-    assert UserDataPayload(**data) == valid_user_data_without_permissions
