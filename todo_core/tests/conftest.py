@@ -1,34 +1,25 @@
 from dataclasses import asdict
+from datetime import datetime, timezone
 from unittest.mock import MagicMock
-from uuid import uuid4
+from uuid import UUID, uuid4
 
-import jwt
 import pytest
 from rest_framework.request import Request
 from rest_framework.test import APIClient
 from rest_framework.viewsets import GenericViewSet
+from tests import JwtEncoder
 from tests.utils import (
     MissingIdUserData,
     ProjectCollaboratorData,
     ProjectData,
-    UserDataPayload,
+    UserTokenPayload,
 )
 
-from common.choices import ProjectPermissions, Roles
+from common.choices import ProjectPermissions, Roles, TaskPermissions
+from common.utils import UserData
 from projects.choices import ProjectCollaboratorRole
 from projects.models import Project, ProjectCollaborators
-from todo_core.settings import ALGORITHM, TOKEN_KEY
-
-
-class JwtEncoder:
-
-    def __init__(self, key: str = TOKEN_KEY, algorithm: str = ALGORITHM) -> None:
-        self.key = key
-        self.algorithm = algorithm
-
-    def encode(self, user_data: UserDataPayload | MissingIdUserData) -> str:
-        payload = asdict(user_data)
-        return jwt.encode(payload=payload, key=self.key, algorithm=self.algorithm)
+from tasks.models import Task, TaskStatusSubscribers
 
 
 @pytest.fixture(scope="session")
@@ -37,61 +28,73 @@ def TokenEncoder() -> JwtEncoder:
 
 
 @pytest.fixture
-def full_permissions_valid_user_data() -> UserDataPayload:
+def full_permissions_valid_user_payload() -> UserTokenPayload:
 
-    return UserDataPayload(
+    return UserTokenPayload(
         mail="borov228@mail.ru",
         user_id="e1701363-5b69-4f08-a4bf-ce391fe0f11e",
         role=[Roles.user],
-        permissions=[ProjectPermissions.create, ProjectPermissions.get],
+        permissions=[
+            ProjectPermissions.create,
+            ProjectPermissions.get,
+            TaskPermissions.get,
+            TaskPermissions.create,
+        ],
     )
 
 
 @pytest.fixture
-def valid_user_data_without_permissions() -> UserDataPayload:
-    return UserDataPayload(
+def full_permissions_valid_user_data() -> UserData:
+
+    return UserData(
         mail="borov228@mail.ru",
-        user_id="2147f8f2-514b-441c-8841-0a5ca2b9c1b7",
+        user_id=UUID("e1701363-5b69-4f08-a4bf-ce391fe0f11e"),
+        role=[Roles.user],
+        permissions=[
+            ProjectPermissions.create,
+            ProjectPermissions.get,
+            TaskPermissions.get,
+            TaskPermissions.create,
+        ],
+    )
+
+
+@pytest.fixture
+def valid_user_data_without_permissions() -> UserData:
+    return UserData(
+        mail="borov228@mail.ru",
+        user_id=UUID("2147f8f2-514b-441c-8841-0a5ca2b9c1b7"),
         role=[Roles.user],
         permissions=[],
     )
 
 
 @pytest.fixture
-def valid_user_data_without_test_project_access() -> UserDataPayload:
-    return UserDataPayload(
+def valid_user_data_without_test_project_access() -> UserData:
+    return UserData(
         mail="borov228@mail.ru",
-        user_id=str(uuid4()),
+        user_id=uuid4(),
         role=[Roles.user],
-        permissions=[ProjectPermissions.create, ProjectPermissions.get],
+        permissions=[
+            ProjectPermissions.create,
+            ProjectPermissions.get,
+            TaskPermissions.get,
+            TaskPermissions.create,
+        ],
     )
+
+
+@pytest.fixture()
+def full_permission_valid_auth_user_token(
+    full_permissions_valid_user_payload: UserTokenPayload, TokenEncoder: JwtEncoder
+) -> str:
+    return TokenEncoder.encode(full_permissions_valid_user_payload)
 
 
 @pytest.fixture
 def invalid_auth_user_data_without_user_id() -> MissingIdUserData:
 
     return MissingIdUserData(mail="borov228@mail.ru")
-
-
-@pytest.fixture()
-def full_permission_valid_auth_user_token(
-    full_permissions_valid_user_data: UserDataPayload, TokenEncoder: JwtEncoder
-) -> str:
-    return TokenEncoder.encode(full_permissions_valid_user_data)
-
-
-@pytest.fixture()
-def valid_auth_user_token_without_permissions(
-    valid_user_data_without_permissions: UserDataPayload, TokenEncoder: JwtEncoder
-) -> str:
-    return TokenEncoder.encode(valid_user_data_without_permissions)
-
-
-@pytest.fixture
-def invalid_auth_user_token(
-    invalid_auth_user_data_without_user_id: MissingIdUserData, TokenEncoder: JwtEncoder
-) -> str:
-    return TokenEncoder.encode(invalid_auth_user_data_without_user_id)
 
 
 @pytest.fixture
@@ -114,39 +117,9 @@ def missing_jwt_auth_header() -> dict[str, str]:
     return {"Bearer ": ""}
 
 
-@pytest.fixture
-def valid_jwt_auth_header(full_permission_valid_auth_user_token: str) -> dict[str, str]:
-    return {"Bearer ": full_permission_valid_auth_user_token}
-
-
 @pytest.fixture()
 def api_client() -> APIClient:
     return APIClient()
-
-
-@pytest.fixture()
-def mock_request(request: pytest.FixtureRequest) -> MagicMock:
-    mock_request = MagicMock(Request)
-    mock_request.user_data = request.user_data
-    return mock_request
-
-
-@pytest.fixture
-def mock_request_with_full_permission_user_data(
-    full_permissions_valid_user_data: UserDataPayload,
-) -> MagicMock:
-    request = MagicMock(Request)
-    request.user_data = full_permissions_valid_user_data
-    return request
-
-
-@pytest.fixture
-def mock_request_without_permissions_user_data(
-    valid_user_data_without_permissions: UserDataPayload,
-) -> MagicMock:
-    request = MagicMock(Request)
-    request.user_data = valid_user_data_without_permissions
-    return request
 
 
 @pytest.fixture
@@ -170,13 +143,13 @@ def mock_viewset() -> MagicMock:
 
 
 @pytest.fixture
-def project_data(full_permissions_valid_user_data: UserDataPayload) -> ProjectData:
+def project_data(full_permissions_valid_user_data: UserData) -> ProjectData:
 
     return ProjectData(
-        id="528a4d91-ef0a-452c-a28d-c9209df3c562",
+        id=UUID("528a4d91-ef0a-452c-a28d-c9209df3c562"),
         name="Test",
         description="Test project",
-        creator_id=str(full_permissions_valid_user_data.user_id),
+        creator_id=full_permissions_valid_user_data.user_id,
     )
 
 
@@ -189,22 +162,74 @@ def project_instance(project_data: ProjectData) -> Project:
 
 @pytest.fixture()
 def project_collaborator_editor_data(
-    project_data: ProjectData, full_permissions_valid_user_data: UserDataPayload
+    project_instance: Project, full_permissions_valid_user_data: UserData
 ) -> ProjectCollaboratorData:
     return ProjectCollaboratorData(
-        user_id=str(full_permissions_valid_user_data.user_id),
-        project_id=project_data.id,
+        user_id=full_permissions_valid_user_data.user_id,
+        project_id=project_instance,
         role=ProjectCollaboratorRole.EDITOR.value,
+    )
+
+
+@pytest.fixture()
+def project_collaborator_reader_data(
+    project_instance: Project, full_permissions_valid_user_data: UserData
+) -> ProjectCollaboratorData:
+    return ProjectCollaboratorData(
+        user_id=full_permissions_valid_user_data.user_id,
+        project_id=project_instance,
+        role=ProjectCollaboratorRole.READER.value,
     )
 
 
 @pytest.fixture
 def project_collaborator_editor_instance(
-    project_collaborator_editor_data: ProjectCollaboratorData, project_instance: Project
+    project_collaborator_editor_data: ProjectCollaboratorData,
 ) -> ProjectCollaborators:
-    project_collaborator_editor_data.project_id = project_instance
     collaborator = ProjectCollaborators(
         **asdict(project_collaborator_editor_data),
     )
     collaborator.save()
     return collaborator
+
+
+@pytest.fixture
+def project_collaborator_reader_instance(
+    project_collaborator_reader_data: ProjectCollaboratorData,
+) -> ProjectCollaborators:
+    collaborator = ProjectCollaborators(
+        **asdict(project_collaborator_reader_data),
+    )
+    collaborator.save()
+    return collaborator
+
+
+@pytest.fixture
+def task_instance(
+    project_instance: Project, full_permissions_valid_user_data: UserData
+) -> Task:
+    task = Task(
+        name="Test",
+        description="Test instance",
+        project_id=project_instance,
+        assigner_id=full_permissions_valid_user_data.user_id,
+        deadline=datetime.now(timezone.utc),
+    )
+    task.save()
+    return task
+
+
+@pytest.fixture
+def task_status_subscriber_instance(
+    task_instance: Task, full_permissions_valid_user_data: UserData
+) -> TaskStatusSubscribers:
+    subscriber = TaskStatusSubscribers(
+        user_id=full_permissions_valid_user_data.user_id, task_id=task_instance
+    )
+    subscriber.save()
+    return subscriber
+
+
+@pytest.fixture
+def current_datetime_with_timezone() -> datetime:
+    return datetime.now(timezone.utc)

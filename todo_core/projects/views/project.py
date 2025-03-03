@@ -10,7 +10,6 @@ from projects.models import Project, ProjectCollaborators
 from projects.permissions import (
     IsCreateProjectPermission,
     IsProjectCreatorPermission,
-    IsProjectViewerPermission,
     IsReadProjects,
 )
 from projects.serializers import ProjectSerializer
@@ -22,13 +21,14 @@ class ProjectViewSet(ActionPermissionViewSetMixin, viewsets.ModelViewSet):
     serializer_class = ProjectSerializer
     permission_classes = [IsJwtAuthorizedPermission]
     action_classes_permission = {
-        "retrieve": [IsReadProjects, IsProjectViewerPermission],
+        "retrieve": [IsReadProjects],
         "create": [IsCreateProjectPermission],
         "list": [IsReadProjects],
         "destroy": [IsProjectCreatorPermission],
         "update": [IsProjectCreatorPermission],
         "partial_update": [IsProjectCreatorPermission],
     }
+    filterset_fields = ["name"]
 
     def get_queryset(self) -> QuerySet[Project]:
         user_id = self.request.user_data.user_id
@@ -40,7 +40,6 @@ class ProjectViewSet(ActionPermissionViewSetMixin, viewsets.ModelViewSet):
         serializer = self.get_serializer(
             data={**request.data, "creator_id": creator_id}
         )
-
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         return Response(

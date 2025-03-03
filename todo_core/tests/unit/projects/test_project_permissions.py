@@ -11,44 +11,6 @@ from projects.models import Project, ProjectCollaborators
     "permission,user_request,expected_result",
     [
         (
-            lf("create_project_permission"),
-            lf("mock_request_full_permission_user"),
-            True,
-        ),
-        (
-            lf("create_project_permission"),
-            lf("mock_request_user_without_permissions"),
-            False,
-        ),
-        (
-            lf("project_reader_permission"),
-            lf("mock_request_full_permission_user"),
-            True,
-        ),
-        (
-            lf("project_reader_permission"),
-            lf("mock_request_user_without_permissions"),
-            False,
-        ),
-    ],
-)
-@pytest.mark.django_db
-def test_project_user_permissions(
-    mock_project_viewset: APIView,
-    user_request: Request,
-    permission: BasePermission,
-    expected_result: bool,
-) -> None:
-    permission_result = permission.has_permission(
-        request=user_request, view=mock_project_viewset
-    )
-    assert permission_result is expected_result
-
-
-@pytest.mark.parametrize(
-    "permission,user_request,expected_result",
-    [
-        (
             lf("project_creator_permission"),
             lf("mock_request_full_permission_user"),
             True,
@@ -59,12 +21,22 @@ def test_project_user_permissions(
             False,
         ),
         (
-            lf("project_viewer_permission"),
+            lf("create_project_permission"),
             lf("mock_request_full_permission_user"),
             True,
         ),
         (
-            lf("project_viewer_permission"),
+            lf("create_project_permission"),
+            lf("mock_request_user_without_permissions"),
+            False,
+        ),
+        (
+            lf("project_reader_permission"),
+            lf("mock_request_full_permission_user"),
+            True,
+        ),
+        (
+            lf("project_reader_permission"),
             lf("mock_request_user_without_permissions"),
             False,
         ),

@@ -5,7 +5,6 @@ from projects.permissions import (
     IsProjectCollaboratorEditorPermission,
     IsProjectCollaboratorReaderPermission,
     IsProjectCreatorPermission,
-    IsProjectViewerPermission,
     IsReadProjects,
 )
 
@@ -28,11 +27,6 @@ def create_project_permission() -> IsCreateProjectPermission:
 @pytest.fixture
 def project_creator_permission() -> IsProjectCreatorPermission:
     return IsProjectCreatorPermission()
-
-
-@pytest.fixture
-def project_viewer_permission() -> IsProjectViewerPermission:
-    return IsProjectViewerPermission()
 
 
 @pytest.fixture

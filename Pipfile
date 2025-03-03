@@ -13,6 +13,8 @@ pyjwt = "==2.10.1"
 django-filter = "==24.3"
 drf-yasg = "==1.21.8"
 markdown = "==3.7"
+django-rest-marshmallow = "==4.0.2"
+marshmallow = "==3.26.1"
 
 [requires]
 python_version = "3.12"

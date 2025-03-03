@@ -4,6 +4,7 @@ from rest_framework.response import Response
 
 from common.mixins import ActionPermissionViewSetMixin
 from common.permissions import IsJwtAuthorizedPermission
+from common.tools.ses import MailSender
 from projects.filters import ProjectCollaboratorFilterBackend
 from projects.models import ProjectCollaborators
 from projects.permissions import (
@@ -33,4 +34,8 @@ class ProjectCollaboratorViewSet(ActionPermissionViewSetMixin, viewsets.ModelVie
         serializer = self.serializer_class(data=data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
+        user_mail = request.user_data.mail
+        MailSender.send_project_invitation_message(
+            user_mail, serializer.data["project_id"]
+        )
         return Response(serializer.data, status=status.HTTP_201_CREATED)

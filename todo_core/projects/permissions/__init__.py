@@ -5,6 +5,5 @@ from .collaborators import (
 from .projects import (
     IsCreateProjectPermission,
     IsProjectCreatorPermission,
-    IsProjectViewerPermission,
     IsReadProjects,
 )

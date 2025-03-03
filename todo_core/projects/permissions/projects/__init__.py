@@ -1,4 +1,3 @@
 from .create_project import IsCreateProjectPermission
 from .get_project import IsReadProjects
 from .project_creator import IsProjectCreatorPermission
-from .project_reader import IsProjectViewerPermission

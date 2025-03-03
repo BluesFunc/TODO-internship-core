@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from django.db import models
 
 from common.models import TimeStampedModel
@@ -5,9 +7,8 @@ from common.models import TimeStampedModel
 
 class TaskStatusSubscribers(TimeStampedModel):
 
-    task_id = models.ForeignKey(
-        "Task", primary_key=True, null=False, on_delete=models.CASCADE
-    )
+    id = models.UUIDField(primary_key=True, default=uuid4)
+    task_id = models.ForeignKey("Task", null=False, on_delete=models.CASCADE)
     user_id = models.UUIDField(
         null=False,
     )
