@@ -1,1 +1,2 @@
-from .task_deadline_schema import TaskDeadlineSchema
+from .task_deadline import TaskDeadlineSchema
+from .task_status import TaskStatusSchema
