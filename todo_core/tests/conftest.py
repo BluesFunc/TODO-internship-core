@@ -1,4 +1,5 @@
 from dataclasses import asdict
+from datetime import datetime, timezone
 from unittest.mock import MagicMock
 from uuid import UUID, uuid4
 
@@ -14,10 +15,11 @@ from tests.utils import (
     UserTokenPayload,
 )
 
-from common.choices import ProjectPermissions, Roles
+from common.choices import ProjectPermissions, Roles, TaskPermissions
 from common.utils import UserData
 from projects.choices import ProjectCollaboratorRole
 from projects.models import Project, ProjectCollaborators
+from tasks.models import Task, TaskStatusSubscribers
 
 
 @pytest.fixture(scope="session")
@@ -32,7 +34,12 @@ def full_permissions_valid_user_payload() -> UserTokenPayload:
         mail="borov228@mail.ru",
         user_id="e1701363-5b69-4f08-a4bf-ce391fe0f11e",
         role=[Roles.user],
-        permissions=[ProjectPermissions.create, ProjectPermissions.get],
+        permissions=[
+            ProjectPermissions.create,
+            ProjectPermissions.get,
+            TaskPermissions.get,
+            TaskPermissions.create,
+        ],
     )
 
 
@@ -43,7 +50,12 @@ def full_permissions_valid_user_data() -> UserData:
         mail="borov228@mail.ru",
         user_id=UUID("e1701363-5b69-4f08-a4bf-ce391fe0f11e"),
         role=[Roles.user],
-        permissions=[ProjectPermissions.create, ProjectPermissions.get],
+        permissions=[
+            ProjectPermissions.create,
+            ProjectPermissions.get,
+            TaskPermissions.get,
+            TaskPermissions.create,
+        ],
     )
 
 
@@ -63,7 +75,12 @@ def valid_user_data_without_test_project_access() -> UserData:
         mail="borov228@mail.ru",
         user_id=uuid4(),
         role=[Roles.user],
-        permissions=[ProjectPermissions.create, ProjectPermissions.get],
+        permissions=[
+            ProjectPermissions.create,
+            ProjectPermissions.get,
+            TaskPermissions.get,
+            TaskPermissions.create,
+        ],
     )
 
 
@@ -154,6 +171,17 @@ def project_collaborator_editor_data(
     )
 
 
+@pytest.fixture()
+def project_collaborator_reader_data(
+    project_instance: Project, full_permissions_valid_user_data: UserData
+) -> ProjectCollaboratorData:
+    return ProjectCollaboratorData(
+        user_id=full_permissions_valid_user_data.user_id,
+        project_id=project_instance,
+        role=ProjectCollaboratorRole.READER.value,
+    )
+
+
 @pytest.fixture
 def project_collaborator_editor_instance(
     project_collaborator_editor_data: ProjectCollaboratorData,
@@ -163,3 +191,45 @@ def project_collaborator_editor_instance(
     )
     collaborator.save()
     return collaborator
+
+
+@pytest.fixture
+def project_collaborator_reader_instance(
+    project_collaborator_reader_data: ProjectCollaboratorData,
+) -> ProjectCollaborators:
+    collaborator = ProjectCollaborators(
+        **asdict(project_collaborator_reader_data),
+    )
+    collaborator.save()
+    return collaborator
+
+
+@pytest.fixture
+def task_instance(
+    project_instance: Project, full_permissions_valid_user_data: UserData
+) -> Task:
+    task = Task(
+        name="Test",
+        description="Test instance",
+        project_id=project_instance,
+        assigner_id=full_permissions_valid_user_data.user_id,
+        deadline=datetime.now(timezone.utc),
+    )
+    task.save()
+    return task
+
+
+@pytest.fixture
+def task_status_subscriber_instance(
+    task_instance: Task, full_permissions_valid_user_data: UserData
+) -> TaskStatusSubscribers:
+    subscriber = TaskStatusSubscribers(
+        user_id=full_permissions_valid_user_data.user_id, task_id=task_instance
+    )
+    subscriber.save()
+    return subscriber
+
+
+@pytest.fixture
+def current_datetime_with_timezone() -> datetime:
+    return datetime.now(timezone.utc)

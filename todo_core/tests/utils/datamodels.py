@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from uuid import UUID
 
-from common.choices import ProjectPermissions, Roles
+from common.choices import ProjectPermissions, Roles, TaskPermissions
 from projects.choices import ProjectCollaboratorRole
 
 
@@ -23,7 +23,7 @@ class UserTokenPayload:
     mail: str
     user_id: str
     role: list[Roles | None]
-    permissions: list[ProjectPermissions | None]
+    permissions: list[ProjectPermissions | TaskPermissions | None]
 
 
 @dataclass(slots=True)

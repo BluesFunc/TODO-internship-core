@@ -3,6 +3,11 @@ from tasks.models import Task
 
 
 class MailSender:
+
+    @staticmethod
+    def send_change_task_status_notification(mail: str, task: Task) -> None:
+        pass
+
     @staticmethod
     def send_change_deadline_notification(mail: str, task: Task) -> None:
         pass

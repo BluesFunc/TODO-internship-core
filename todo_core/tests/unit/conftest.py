@@ -78,3 +78,8 @@ def mock_request_without_permissions_user_data(
     request = MagicMock(Request)
     request.user_data = valid_user_data_without_permissions
     return request
+
+
+@pytest.fixture
+def mock_request_with_project_reader_user_data() -> None:
+    pass
