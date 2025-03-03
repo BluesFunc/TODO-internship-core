@@ -28,6 +28,7 @@ class ProjectViewSet(ActionPermissionViewSetMixin, viewsets.ModelViewSet):
         "update": [IsProjectCreatorPermission],
         "partial_update": [IsProjectCreatorPermission],
     }
+    filterset_fields = ["name"]
 
     def get_queryset(self) -> QuerySet[Project]:
         user_id = self.request.user_data.user_id

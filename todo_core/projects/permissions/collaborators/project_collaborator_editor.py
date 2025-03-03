@@ -14,4 +14,6 @@ class IsProjectCollaboratorEditorPermission(BasePermission):
         user_id = request.user_data.user_id
         project_id = UUID(view.kwargs.get("project_pk"))
         project = ProjectService.get_by_id(project_id)
+        if project is None:
+            return False
         return ProjectService.is_creator(user_id, project)

@@ -15,6 +15,8 @@ class IsProjectCollaboratorReaderPermission(BasePermission):
             project_id = view.kwargs.get("project_pk")
             project_id = UUID(project_id)
             project = ProjectService.get_by_id(project_id)
+            if project is None:
+                return False
             user_id = request.user_data.user_id
         except ValueError as ve:
             raise ValidationError(ve)

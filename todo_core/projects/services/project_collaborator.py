@@ -1,5 +1,7 @@
 from uuid import UUID
 
+from django.core.exceptions import ObjectDoesNotExist
+
 from projects.choices import ProjectCollaboratorRole
 from projects.models import Project, ProjectCollaborators
 
@@ -19,7 +21,10 @@ class ProjectCollaboratorsService:
 
     @staticmethod
     def is_project_editor(user_id: UUID, project: Project) -> bool:
-        collaborator = ProjectCollaborators.objects.get(
-            project_id=project, user_id=user_id
-        )
+        try:
+            collaborator = ProjectCollaborators.objects.get(
+                project_id=project, user_id=user_id
+            )
+        except ObjectDoesNotExist:
+            return False
         return collaborator.role == ProjectCollaboratorRole.EDITOR.value
