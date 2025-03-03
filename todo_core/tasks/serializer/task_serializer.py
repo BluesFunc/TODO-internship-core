@@ -5,7 +5,9 @@ from tasks.models.task import Task
 
 
 class TaskSerializer(serializers.ModelSerializer):
-    project_id = serializers.PrimaryKeyRelatedField(queryset=Project.objects.all())
+    project_id = serializers.PrimaryKeyRelatedField(
+        queryset=Project.objects.all(), required=False
+    )
 
     class Meta:
         model = Task
@@ -17,4 +19,8 @@ class TaskSerializer(serializers.ModelSerializer):
             "deadline",
             "assigner_id",
             "project_id",
+            "created_at",
         ]
+        extra_kwargs = {
+            "created_at": {"read_only": True},
+        }
